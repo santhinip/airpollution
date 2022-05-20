@@ -23,7 +23,7 @@ public interface UserRegistrationService {
 	
 	public List<UserRecord> viewAllUsers() throws Exception;
 	
-	public ResponseEntity<?> activateUser(UserActivationRequest userActivationRequest);
+	public ResponseEntity<?> activateUser(UserActivationRequest userActivationRequest) throws Exception;
 	
 	public String adminLogin(AdminLoginRequest admin);
 	

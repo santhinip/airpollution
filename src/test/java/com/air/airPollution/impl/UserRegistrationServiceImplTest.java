@@ -104,7 +104,7 @@ public class UserRegistrationServiceImplTest {
 	}
 	
 	@Test
-	public void activateUserTest() {
+	public void activateUserTest() throws Exception {
 		UserActivationRequest userActivationRequest = new UserActivationRequest();
 		userActivationRequest.setUsername("ert@gmail.com");
 		assertNotNull(mockService.activateUser(userActivationRequest));

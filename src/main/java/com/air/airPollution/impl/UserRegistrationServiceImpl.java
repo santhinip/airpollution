@@ -98,25 +98,29 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public ResponseEntity<?> activateUser(UserActivationRequest userActivationRequest) {
-		List<UserRegistrationRequest> userDetails = repo.findAll();
-			Iterator<UserRegistrationRequest> iterator = userDetails.iterator();
-			while(iterator.hasNext()) {
-				UserRegistrationRequest userrec = (UserRegistrationRequest) iterator.next();
-				if(null != userrec) {
-					if(userrec.getEnabled().equalsIgnoreCase("true")) {
-						return new ResponseEntity<>(new UserActivationResponse("Success","USER already Activated"), HttpStatus.OK);
-					}
-					else if(userrec.getEnabled().equalsIgnoreCase("false") && userrec.getUsername().equalsIgnoreCase(userActivationRequest.getUsername())) {
-						userrec.setEnabled("true");
-						repo.save(userrec);
-						return new ResponseEntity<>(new UserActivationResponse("Success","USER Activated"), HttpStatus.OK);
-					}
-				}	
-			}
-		return new ResponseEntity<>(new UserActivationResponse("Failure","User with username "+ userActivationRequest.getUsername()+" not exist"), HttpStatus.BAD_REQUEST);
-	}
+	public ResponseEntity<?> activateUser(UserActivationRequest userActivationRequest) throws Exception {
+		UserRegistrationRequest user;
+		try {
+			user = repo.getById(userActivationRequest.getUsername());
 
+			if (user.getUsername() != null && user.getEnabled() != null) {
+				if (user.getEnabled().equalsIgnoreCase("true")) {
+					return new ResponseEntity<>(new UserActivationResponse("Success", "USER already Activated"),
+							HttpStatus.OK);
+				} else if (user.getEnabled().equalsIgnoreCase("false")) {
+					user.setEnabled("true");
+					repo.save(user);
+					return new ResponseEntity<>(new UserActivationResponse("Success", "USER Activated"), HttpStatus.OK);
+				}
+			}
+		} catch (Exception e) {
+			throw new Exception("User with username " + userActivationRequest.getUsername() + " not exist");
+		}
+		return new ResponseEntity<>(
+				new UserActivationResponse("Failure",
+						"User with username " + userActivationRequest.getUsername() + " not exist"),
+				HttpStatus.BAD_REQUEST);
+	}
 	@Override
 	public String adminLogin(AdminLoginRequest admin) {
 		String loginStatus = "Failed";
